@@ -22,10 +22,10 @@ special object that stores a numeric vector and caches its mean.
 The first function, `makeVector` creates a special "vector", which is
 really a list containing a function to
 
-1.  set the value of the vector
-2.  get the value of the vector
-3.  set the value of the mean
-4.  get the value of the mean
+1. set the value of the vector
+2. get the value of the vector
+3. set the value of the mean
+4. get the value of the mean
 
 <!-- -->
 
@@ -103,3 +103,108 @@ In order to complete this assignment, you must do the following:
 ### Grading
 
 This assignment will be graded via peer assessment.
+
+### My Answer
+
+* **makeCacheMatrix()**: This function creates a special “matrix” object that can cache its inverse:
+
+```
+
+makeCacheMatrix  <- function(x = matrix()){
+  m <- NULL
+  set <-function(y){
+    x <<- y
+    m <<- NULL
+  }
+  get <- function() x
+  setinverse <- function(inverse) m <<- inverse
+  getinverse <- function() m
+  list(set = set, get  = get,
+       setinverse = setinverse,
+       getinverse = getinverse)
+}
+```
+
+- **cacheSolve**: This function computes the inverse of the special “matrix” returned by makeCacheMatrix above.
+
+```
+cacheSolve <- function(x, ...){
+  m <- x$getinverse()
+  if(!is.null(m)) {
+    message("getting cache data")
+    return(m)
+  }
+  data <- x$get()
+  m <- solve(data,...)
+  x$setinverse(m)
+  m
+  
+}
+```
+
+
+
+- *By definition let B be a square matrix of order n. We say that B is invertible if there is a matrix C such that B.C = C.B = In. If B is not invertible, we say that C is a singular matrix.*
+
+  
+
+- Creating a square matrix of order 2 and assigning the variable B.
+
+```
+> B <- matrix(c(1:4), ncol = 2, nrow = 2)
+> B
+     [,1] [,2]
+[1,]    1    3
+[2,]    2    4
+```
+
+* Calling the **"makeCacheMatrix"** function, passing the variable B as an argument and assigning the variable B1.
+
+```
+> B1 <- makeCacheMatrix(B)
+> B1
+$set
+function(y){
+    x <<- y
+    m <<- NULL
+  }
+<bytecode: 0x0000000019804c28>
+<environment: 0x00000000198ed138>
+
+$get
+function() x
+<bytecode: 0x000000001985a500>
+<environment: 0x00000000198ed138>
+
+$setinverse
+function(inverse) m <<- inverse
+<bytecode: 0x00000000198c7898>
+<environment: 0x00000000198ed138>
+
+$getinverse
+function() m
+<bytecode: 0x000000001991b288>
+<environment: 0x00000000198ed138>
+```
+
+* Calling the **"cacheSolve"** function, passing the variable B1 as an argument, we get the simplified value of the inverse.
+
+```
+> cacheSolve(B1)
+     [,1] [,2]
+[1,]   -2  1.5
+[2,]    1 -0.5
+> 
+```
+
+#### Easily, the condition of existence of the inverse matrix is verified:
+
+```
+> identity_matrix <- (B %*% cacheSolve(B1))
+getting cache data
+> identity_matrix
+     [,1] [,2]
+[1,]    1    0
+[2,]    0    1
+> 
+```
